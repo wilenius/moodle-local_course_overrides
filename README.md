@@ -122,3 +122,91 @@ MoMoPDA provides comprehensive development guides and pattern documentation for 
 - **Security Checklists** - Vulnerability prevention and secure coding practices
 
 All guides are based on analysis of Moodle 5.x core implementations and follow official Moodle development standards.
+
+## Getting Started
+
+### Prerequisites
+- [Claude Code](https://claude.ai/code) or compatible agentic AI development environment
+- Git
+- Moodle development environment (optional but recommended)
+
+### Setup Instructions
+
+1. **Clone the MoMoPDA repository**
+   ```bash
+   git clone https://github.com/your-org/momopda.git
+   cd momopda
+   ```
+
+2. **Create your plugin repository**
+
+   Rename or create a new repository following Moodle plugin naming conventions:
+
+   ```bash
+   # E.g., for a new block plugin
+   git clone https://github.com/your-org/momopda.git moodle-block_your_plugin_name
+   cd moodle-block_your_plugin_name
+
+   ```
+
+   **Plugin Naming Convention Examples:**
+   - Block plugins: `moodle-block_nice_new_block`
+   - Question types: `moodle-qtype_custom_quiz`
+   - Enrolment plugins: `moodle-enrol_company_sso`
+   - Filter plugins: `moodle-filter_content_enhancer`
+   - TinyMCE plugins: `moodle-tiny_equation_editor`
+   - Report plugins: `moodle-report_analytics_dashboard`
+   - Question bank plugins: `moodle-qbank_question_organizer`
+
+3. **Optional: Clone Moodle core for reference**
+   ```bash
+   # In parent directory
+   cd ..
+   git clone https://github.com/moodle/moodle.git
+   ```
+
+   Your directory structure should look like:
+   ```
+   .
+   ├── moodle/                           # Moodle core (optional reference)
+   └── moodle-block_your_plugin_name/    # Your plugin with MoMoPDA
+       ├── PROMPT.md
+       ├── CLAUDE.md
+       └── .prompts/
+   ```
+
+4. **Start your coding agent from the root of the repository**
+
+5. **Begin development**
+
+   Start by describing what you want to build. MoMoPDA will automatically detect your plugin type from the repository name and load the appropriate guides:
+
+   ```
+   "I want to create a new block plugin that displays student progress charts"
+   "Help me add a new question type for mathematical expressions"
+   "I need to fix a bug in my enrolment plugin's user sync feature"
+   ```
+
+### How It Works
+
+MoMoPDA automatically detects your plugin type and development context:
+
+- **Plugin Type Detection**: Based on repository name (e.g., `block_*`, `qtype_*`, `enrol_*`)
+- **Task Detection**: Based on git branch names, file changes, and user requests
+- **Context Loading**: Automatically loads relevant guides, patterns, and best practices
+- **Security & Quality**: Always includes security checklists and quality standards
+
+### Tips for Best Results
+
+1. **Use descriptive repository names** following Moodle conventions
+2. **Be specific in your requests** - mention features, requirements, and constraints
+3. **Reference existing Moodle plugins** if you want similar functionality
+4. **Ask for tests** - MoMoPDA includes comprehensive testing guidance
+5. **Request security reviews** when handling user data or permissions
+
+### Troubleshooting
+
+- **Plugin type not detected?** Ensure your repository name follows the `moodle-{plugintype}_{pluginname}` convention
+- **Missing guidance?** Check if your plugin type is supported in the list above
+- **Need custom patterns?** The guides include extension points for custom functionality
+- **Your new plugin has bugs?** Fix them and ask your coding agent to improve the patterns files!
