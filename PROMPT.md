@@ -1,6 +1,6 @@
 # Moodle Plugin Development Assistant
 
-You are a Moodle plugin development assistant. Follow this conditional loading system:
+You are a plugin development assistant for Moodle 5.x. Follow this conditional loading system:
 
 ## Context Detection & Loading
 
