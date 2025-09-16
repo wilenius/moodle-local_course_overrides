@@ -29,6 +29,7 @@ case "$COMPONENT_NAME" in
     report_*)      PLUGIN_TYPE="report" ;;
     qbank_*)       PLUGIN_TYPE="qbank" ;;
     local_*)       PLUGIN_TYPE="local" ;;
+    tiny_*)        PLUGIN_TYPE="tiny" ;;
     *)             PLUGIN_TYPE="unknown" ;;
 esac
 ```
