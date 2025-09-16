@@ -533,83 +533,16 @@ class question_manager {
 }
 ```
 
-## Essential Moodle 5.x Patterns
+## Essential Quick Reference
 
-### Question Creation Checklist
-For any plugin that creates questions, you MUST:
+### Key URL Changes in Moodle 5.x
+- Old: `/question/bank/view.php` → New: `/question/edit.php`
+- Always use `cmid` parameter for question bank access
+- Use `/question/banks.php` for course-level question bank listing
 
+### Question Creation Requirements (3-Table Structure)
 1. **Insert into question table** with proper fields
 2. **Create question_bank_entries record** with unique idnumber
 3. **Create question_versions record** linking them
 4. **Handle question type-specific data** (multichoice, etc.)
 5. **Validate idnumber uniqueness** in category before insertion
-
-### GIFT Format Integration Checklist
-When using GIFT format parser:
-
-1. **Use readquestion() method** (not protected readquestions())
-2. **Split content into lines** with `preg_split('/[\n\r]/', $content)`
-3. **Handle array format** for answers and feedback
-4. **Extract 'text' field** from answer/feedback arrays
-5. **Preserve format information** from parser
-
-### Progress System Integration Checklist
-For background task processing:
-
-1. **Use stored_progress_task_trait** in task class
-2. **Call start_stored_progress()** in execute method
-3. **Update progress regularly** with progress->update()
-4. **Get progress via stored_progress_bar** static methods
-5. **Handle initial progress setup** carefully (buffer output)
-
-### URL Structure Updates for Moodle 5.x
-- Old: `/question/bank/view.php` → New: `/question/edit.php`
-- Always use `cmid` parameter for question bank access
-- Use `/question/banks.php` for course-level question bank listing
-
-## Testing Checklist for Moodle 5.x
-
-### Database Compatibility
-- [ ] ✅ Uses {question_versions} table in all queries
-- [ ] ✅ No references to old q.category field
-- [ ] ✅ Version filtering with MAX() subquery
-- [ ] ✅ Status filtering (hidden questions)
-- [ ] ✅ Complete question creation (all 3 tables)
-- [ ] ✅ Unique idnumber handling
-
-### Context & Parameters
-- [ ] ✅ Uses global $PAGE in plugin_feature.php
-- [ ] ✅ Target page handles cmid parameter correctly
-- [ ] ✅ No calls to get_question_bank() methods
-- [ ] ✅ Proper context derivation from cmid
-- [ ] ✅ Required files included (editlib.php)
-
-### SQL Parameters
-- [ ] ✅ Consistent parameter naming (all named or all positional)
-- [ ] ✅ No mixed parameter types in queries
-- [ ] ✅ Proper parameter merging
-
-### URL Structure
-- [ ] ✅ Uses /question/edit.php (not /question/bank/view.php)
-- [ ] ✅ Correct cmid-based URLs throughout
-- [ ] ✅ No method chaining in array literals
-
-### Data Format Handling
-- [ ] ✅ GIFT parser array format handled correctly
-- [ ] ✅ Answer text extracted from ['text'] field
-- [ ] ✅ Feedback format preserved
-- [ ] ✅ Progress bar access via static methods
-
-### User Interface
-- [ ] ✅ Bulk actions appear in "With selected" dropdown
-- [ ] ✅ No redundant question selection interfaces
-- [ ] ✅ Clear action flow from selection to processing
-- [ ] ✅ Consistent form processing pattern (AJAX vs traditional)
-
-### Error Handling
-- [ ] ✅ Graceful handling of no questions selected
-- [ ] ✅ Individual question permission checking
-- [ ] ✅ Proper redirects and error messages
-- [ ] ✅ Database constraint violation prevention
-
-This comprehensive guide addresses ALL the critical issues encountered in Moodle 5.x qbank plugin development, including the new database structure, URL changes, constraint violations, GIFT format handling, progress system integration, and form processing patterns.

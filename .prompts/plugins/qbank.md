@@ -97,13 +97,69 @@ qbank_yourplugin/
 - [ ] ✅ Use `question_require_capability_on()` for individual questions
 - [ ] ✅ Use parameterized database queries
 
-### Testing
-- [ ] ✅ Test with no questions selected (should redirect gracefully)
-- [ ] ✅ Test with multiple question types and large selections
+## 🚨 COMPREHENSIVE TESTING CHECKLIST FOR MOODLE 5.x
+
+### Database Compatibility
+- [ ] ✅ Uses {question_versions} table in all queries
+- [ ] ✅ No references to old q.category field
+- [ ] ✅ Version filtering with MAX() subquery for latest versions
+- [ ] ✅ Status filtering (excludes hidden questions)
+- [ ] ✅ Complete question creation (all 3 tables: question, question_bank_entries, question_versions)
+- [ ] ✅ Unique idnumber handling (no constraint violations)
+
+### Context & Parameters Access
+- [ ] ✅ Uses global $PAGE in plugin_feature.php (not get_question_bank())
+- [ ] ✅ Target page handles cmid parameter correctly
+- [ ] ✅ No calls to get_question_bank() methods
+- [ ] ✅ Proper context derivation from cmid using get_module_from_cmid()
+- [ ] ✅ Required files included (editlib.php for question functions)
+
+### SQL & Parameters
+- [ ] ✅ Consistent parameter naming (all named or all positional)
+- [ ] ✅ No mixed parameter types in queries
+- [ ] ✅ Proper parameter merging with array_merge()
+- [ ] ✅ Use parameterized database queries (no SQL injection)
+
+### URL Structure & Navigation
+- [ ] ✅ Uses /question/edit.php (not /question/bank/view.php)
+- [ ] ✅ Correct cmid-based URLs throughout
+- [ ] ✅ No method chaining in array literals
+- [ ] ✅ Proper redirect URLs after bulk actions
+
+### Data Format Handling
+- [ ] ✅ GIFT parser array format handled correctly (extract ['text'] field from answers/feedback)
+- [ ] ✅ Feedback format preserved from parser
+- [ ] ✅ Progress bar access via stored_progress_bar static methods
+
+### User Interface & Integration
+- [ ] ✅ Bulk actions appear in "With selected" dropdown
+- [ ] ✅ No redundant question selection interfaces
+- [ ] ✅ Clear action flow from selection to processing
+- [ ] ✅ Consistent form processing pattern (AJAX vs traditional, not mixed)
+
+### Capability & Security Testing
+- [ ] ✅ Check capabilities at both plugin and individual question level
+- [ ] ✅ Use `question_require_capability_on()` for individual questions
+- [ ] ✅ Validate and sanitize all input parameters
 - [ ] ✅ Test capability checking and permission scenarios
+
+### Error Handling & Edge Cases
+- [ ] ✅ Graceful handling of no questions selected (redirect with message)
+- [ ] ✅ Proper redirects and error messages
+- [ ] ✅ Database constraint violation prevention
+- [ ] ✅ Test with multiple question types and large selections
+
+### Language Strings & Installation
+- [ ] ✅ Increment version number when adding new strings
+- [ ] ✅ Include all required strings in language file
 - [ ] ✅ Test plugin installation and language string loading
+
+### Advanced Moodle 5.x Features
 - [ ] ✅ Test with Moodle 5.x shared question bank structure
 - [ ] ✅ Verify question creation includes all required tables
+- [ ] ✅ Test question versioning compatibility
+- [ ] ✅ Test with different question bank contexts (course, system)
+- [ ] ✅ Verify background task processing and progress tracking
 
 ## Moodle 5.x Database Structure
 
