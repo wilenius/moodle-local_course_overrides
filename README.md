@@ -18,6 +18,8 @@ This repository is a collection of prompts that can be combined in different way
     │   ├── enrol_patterns.md        # Enrolment plugin patterns and anti-patterns
     │   ├── filter.md                # Filter plugin development guide
     │   ├── filter_patterns.md       # Filter plugin patterns and anti-patterns
+    │   ├── mod.md                   # Activity module plugin development guide
+    │   ├── mod_patterns.md          # Activity module plugin patterns and anti-patterns
     │   ├── qbank.md                 # Question bank plugin development guide
     │   ├── qbank_patterns.md        # Question bank plugin patterns and anti-patterns
     │   ├── qtype.md                 # Question type plugin development guide
@@ -100,6 +102,7 @@ The Moodle core repository should be cloned alongside this repository for refere
 MoMoPDA provides comprehensive development guides and pattern documentation for the following Moodle plugin types:
 
 ### Core Plugin Types
+- **Activity Modules** (`mod_*`) - Custom learning activities and assignments
 - **Block Plugins** (`block_*`) - Custom dashboard and course blocks
 - **Question Types** (`qtype_*`) - Custom question types for quizzes and assignments
 - **Question Bank Plugins** (`qbank_*`) - Question bank management and organization tools
@@ -150,6 +153,7 @@ All guides are based on analysis of Moodle 5.x core implementations and follow o
    ```
 
    **Plugin Naming Convention Examples:**
+   - Activity modules: `moodle-mod_interactive_lesson`
    - Block plugins: `moodle-block_nice_new_block`
    - Question types: `moodle-qtype_custom_quiz`
    - Enrolment plugins: `moodle-enrol_company_sso`
