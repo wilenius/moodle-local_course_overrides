@@ -1102,3 +1102,242 @@ class mod_yourmodule_lib_test extends advanced_testcase {
 10. **Consider Accessibility**: Ensure your module is accessible to all users
 
 Activity modules are complex components that integrate deeply with Moodle's course structure. Take time to understand existing modules like Assignment and Page before building your own custom activities.
+
+## Common Issues and Solutions
+
+Based on real-world development experience, here are critical issues to avoid:
+
+### 1. XMLDB Schema Issues
+
+**Issue**: Missing COMMENT attribute errors during installation
+```
+Missing COMMENT attribute [Error reading xmldb file
+```
+
+**Root Cause**: XMLDB files require strict formatting with proper namespace declarations and COMMENT attributes.
+
+**Solution**: Always include proper XML header with namespace and COMMENT attributes:
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/yourmodule/db" VERSION="2024121700" COMMENT="XMLDB file for Moodle mod/yourmodule"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+  <TABLES>
+    <TABLE NAME="yourmodule" COMMENT="Main activity table">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+        <!-- Add SEQUENCE="false" to all non-primary key fields -->
+      </FIELDS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
+```
+
+**Critical**: All non-primary key fields must have `SEQUENCE="false"` attribute.
+
+### 2. Database Constraint Violations
+
+**Issue**: "null value in column introformat violates not-null constraint"
+
+**Root Cause**: Form processing doesn't properly handle intro field defaults.
+
+**Solution**: Always ensure proper defaults in add/update functions:
+```php
+function yourmodule_add_instance(stdClass $data, ?mod_yourmodule_mod_form $form = null) {
+    global $DB;
+
+    $data->timecreated = time();
+    $data->timemodified = $data->timecreated;
+
+    // Handle intro field processing BEFORE setting defaults
+    if ($form && isset($data->intro_editor)) {
+        $data = file_postupdate_standard_editor($data, 'intro',
+            yourmodule_get_editor_options(), $form->get_context(),
+            'mod_yourmodule', 'intro', 0);
+    }
+
+    // CRITICAL: Ensure intro and introformat have proper values
+    if (!isset($data->intro) || $data->intro === null) {
+        $data->intro = '';
+    }
+    if (!isset($data->introformat) || $data->introformat === null) {
+        $data->introformat = FORMAT_HTML;
+    }
+
+    $data->id = $DB->insert_record('yourmodule', $data);
+    return $data->id;
+}
+```
+
+### 3. POST Form Processing Issues
+
+**Issue**: Form submissions not being detected properly
+
+**Root Cause**: Submit buttons with `optional_param()` don't work as expected - they send empty values.
+
+**Wrong Approach**:
+```php
+$submitpost = optional_param('submitpost', '', PARAM_TEXT);
+if ($submitpost) { // This will never be true!
+    // Process form
+}
+```
+
+**Correct Approach**:
+```php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitpost'])) {
+    require_sesskey();
+    // Process form
+}
+```
+
+### 4. User Picture Display Errors
+
+**Issue**: "Object of class stdClass could not be converted to string"
+
+**Root Cause**: Using manually constructed user objects instead of proper database records.
+
+**Wrong Approach**:
+```php
+// Creating user object manually from post data
+$user = new stdClass();
+$user->id = $post->user_id;
+$user->firstname = $post->firstname;
+// ... other fields
+echo $OUTPUT->user_picture($user); // FAILS!
+```
+
+**Correct Approach**:
+```php
+// Always get complete user record from database
+$user = $DB->get_record('user', ['id' => $post->user_id]);
+if ($user) {
+    echo $OUTPUT->user_picture($user, ['size' => 40, 'class' => 'rounded-circle']);
+} else {
+    echo '<div class="bg-secondary rounded-circle" style="width: 40px; height: 40px;"></div>';
+}
+```
+
+### 5. Completion Tracking Failures
+
+**Issue**: "Can't find data record in database table course"
+
+**Root Cause**: Using course module ID instead of course ID for completion tracking.
+
+**Wrong Approach**:
+```php
+$completion = new completion_info($this->cm->course); // cm->course is course ID, not course object
+$completion->update_state($this->cm, COMPLETION_COMPLETE, $userid);
+```
+
+**Correct Approach**:
+```php
+$course = get_course($this->cm->course); // Get full course object
+$completion = new completion_info($course);
+$completion->update_state($this->cm, COMPLETION_COMPLETE, $userid);
+```
+
+### 6. File Upload and Serving Issues
+
+**Critical for Image Handling**: Always validate file types and implement proper pluginfile function:
+```php
+function yourmodule_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+
+    require_login($course, false, $cm);
+
+    if (!has_capability('mod/yourmodule:view', $context)) {
+        return false;
+    }
+
+    if ($filearea !== 'attachment') {
+        return false;
+    }
+
+    $itemid = array_shift($args);
+    $filename = array_pop($args);
+    $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
+
+    $fs = get_file_storage();
+    $file = $fs->get_file($context->id, 'mod_yourmodule', $filearea, $itemid, $filepath, $filename);
+
+    if (!$file) {
+        return false;
+    }
+
+    send_stored_file($file, 86400, 0, $forcedownload, $options);
+}
+```
+
+### 7. CSS and Layout Issues
+
+**For Social Media Style Layouts**: Use proper CSS techniques for fixed aspect ratios:
+```css
+/* Instagram-style square images */
+.yourmodule-attachment {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 1:1 aspect ratio */
+    overflow: hidden;
+}
+
+.yourmodule-attachment img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+```
+
+### 8. Debug and Testing Strategies
+
+**Enable Debug Mode During Development**:
+```php
+// Add temporary debug output
+if (debugging()) {
+    echo '<pre>DEBUG: ' . print_r($data, true) . '</pre>';
+}
+```
+
+**Always Test With**:
+- Different user roles (student, teacher, admin)
+- Different screen sizes and browsers
+- File uploads with various formats and sizes
+- Form validation edge cases
+- Database integrity after operations
+
+### 9. Form Validation Best Practices
+
+**In mod_form.php validation method**:
+```php
+public function validation($data, $files) {
+    $errors = parent::validation($data, $files);
+
+    // Validate required fields
+    if (empty(trim($data['name']))) {
+        $errors['name'] = get_string('required');
+    }
+
+    // Validate numeric fields
+    if (!empty($data['maxlength']) && $data['maxlength'] < 1) {
+        $errors['maxlength'] = get_string('invalidmaxlength', 'mod_yourmodule');
+    }
+
+    // Validate date ranges
+    if (!empty($data['availablefrom']) && !empty($data['availableuntil'])) {
+        if ($data['availablefrom'] >= $data['availableuntil']) {
+            $errors['availableuntil'] = get_string('availableuntilmustbeafter', 'mod_yourmodule');
+        }
+    }
+
+    return $errors;
+}
+```
+
+These issues are based on actual development experience and following these patterns will prevent the most common plugin development problems.

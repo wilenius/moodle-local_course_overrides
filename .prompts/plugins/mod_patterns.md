@@ -307,30 +307,36 @@ echo $OUTPUT->footer();
 
 **Pattern**: Design efficient and maintainable database schemas with proper relationships.
 
+**⚠️ CRITICAL**: Moodle's XMLDB is extremely strict about format. Follow this exact structure to avoid installation errors.
+
 ```xml
-<!-- ✅ Well-structured install.xml -->
+<!-- ✅ CORRECT: Complete XMLDB structure with all required attributes -->
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/yourmodule/db" VERSION="2024011700">
+<XMLDB PATH="mod/yourmodule/db" VERSION="2024121700" COMMENT="XMLDB file for Moodle mod/yourmodule"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
   <TABLES>
     <!-- ✅ Main activity table with all necessary fields -->
     <TABLE NAME="yourmodule" COMMENT="Main activity instances">
       <FIELDS>
+        <!-- ✅ CRITICAL: All FIELD elements MUST have SEQUENCE attribute -->
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="1333" NOTNULL="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false"/>
         <!-- ✅ Standard intro fields -->
-        <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <!-- ✅ Activity-specific fields -->
-        <FIELD NAME="instructions" TYPE="text" NOTNULL="false"/>
-        <FIELD NAME="instructionsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="instructions" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="instructionsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <!-- ✅ Availability and grading fields -->
-        <FIELD NAME="availablefrom" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="availableuntil" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="availablefrom" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="availableuntil" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <!-- ✅ Standard timestamp fields -->
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -347,18 +353,18 @@ echo $OUTPUT->footer();
     <TABLE NAME="yourmodule_submissions" COMMENT="Student submissions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="yourmodule" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="content" TYPE="text" NOTNULL="false"/>
-        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="yourmodule" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <!-- ✅ Grading fields with proper precision -->
-        <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="false" DECIMALS="5"/>
-        <FIELD NAME="feedback" TYPE="text" NOTNULL="false"/>
-        <FIELD NAME="feedbackformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="false" DECIMALS="5" SEQUENCE="false"/>
+        <FIELD NAME="feedback" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="feedbackformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <!-- ✅ Comprehensive timestamp tracking -->
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
-        <FIELD NAME="timegraded" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timegraded" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -373,6 +379,36 @@ echo $OUTPUT->footer();
     </TABLE>
   </TABLES>
 </XMLDB>
+```
+
+#### 🚨 XMLDB Critical Requirements Checklist
+
+**Root Element Requirements:**
+- [ ] `<?xml version="1.0" encoding="UTF-8" ?>` declaration
+- [ ] `XMLDB` root element with `PATH`, `VERSION`, and `COMMENT` attributes
+- [ ] XML namespace declarations (`xmlns:xsi` and `xsi:noNamespaceSchemaLocation`)
+- [ ] Schema location pointing to `../../../lib/xmldb/xmldb.xsd`
+
+**Field Requirements:**
+- [ ] **ALL fields MUST have `SEQUENCE` attribute** (`true` for auto-increment, `false` for others)
+- [ ] Primary key fields: `SEQUENCE="true"`
+- [ ] All other fields: `SEQUENCE="false"`
+- [ ] Use `NOTNULL="false"` for optional fields (intro, content, attachments)
+- [ ] Use `NOTNULL="true"` for required fields with defaults
+
+**Common XMLDB Installation Errors:**
+- ❌ "Missing COMMENT attribute" → Add `COMMENT` to root XMLDB element
+- ❌ "Missing SEQUENCE attribute" → Add `SEQUENCE="false"` to all non-primary fields
+- ❌ XML validation errors → Check namespace declarations and schema reference
+- ❌ Foreign key errors → Ensure referenced tables exist in correct order
+
+**Validation Commands:**
+```bash
+# Validate XML syntax
+xmllint --noout /path/to/install.xml
+
+# Check against Moodle schema (if available)
+xmllint --schema /path/to/moodle/lib/xmldb/xmldb.xsd /path/to/install.xml
 ```
 
 ### 6. Proper Event Logging
@@ -634,22 +670,45 @@ function yourmodule_get_completion_state($course, $cm, $userid, $type) {
 **Anti-Pattern**: Inefficient database schema and queries.
 
 ```xml
-<!-- ❌ BAD: Poor schema design -->
-<TABLE NAME="yourmodule_submissions">
-  <FIELDS>
-    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-    <FIELD NAME="yourmodule" TYPE="int" LENGTH="10" NOTNULL="true"/>
-    <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
-    <FIELD NAME="content" TYPE="text"/>
-    <!-- Missing format fields, timestamps, indexes -->
-  </FIELDS>
-  <KEYS>
-    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-    <!-- Missing foreign keys! -->
-  </KEYS>
-  <!-- No indexes for common queries! -->
-</TABLE>
+<!-- ❌ BAD: Incomplete XMLDB structure causing installation failures -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/yourmodule/db" VERSION="2024011700">
+  <!-- ❌ Missing COMMENT, namespace declarations, schema reference -->
+  <TABLES>
+    <TABLE NAME="yourmodule_submissions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="yourmodule" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <!-- ❌ Missing SEQUENCE attribute -->
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <!-- ❌ Missing SEQUENCE attribute -->
+        <FIELD NAME="content" TYPE="text"/>
+        <!-- ❌ Missing SEQUENCE, format fields, timestamps, indexes -->
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <!-- ❌ Missing foreign keys! -->
+      </KEYS>
+      <!-- ❌ No indexes for common queries! -->
+    </TABLE>
+  </TABLES>
+</XMLDB>
 ```
+
+**Common XML Installation Errors:**
+```
+mod_yourmodule
+Missing COMMENT attribute
+Error code: ddlxmlfileerror
+Errors found in XMLDB file: Missing COMMENT attribute
+```
+
+**Root Causes:**
+- Missing `COMMENT` attribute on root `XMLDB` element
+- Missing `SEQUENCE` attributes on field definitions
+- Missing XML namespace declarations
+- Incorrect schema reference paths
+- Missing required attributes like `DEFAULT` values
 
 ```php
 // ❌ BAD: N+1 query problem
@@ -907,3 +966,508 @@ function yourmodule_reset_userdata($data) {
 - [ ] Cross-browser compatibility is verified
 
 Following these patterns will help you create robust, secure, and well-integrated activity modules that provide excellent user experiences and maintain compatibility with Moodle's evolving architecture.
+
+## Real-World Bug Patterns and Solutions
+
+Based on actual socialwall plugin development, here are critical issues to avoid:
+
+### 🚨 Critical XMLDB Installation Failures
+
+**The Problem**: These exact errors will block plugin installation completely.
+
+#### Error 1: Missing COMMENT Attribute
+```
+mod_socialwall
+Missing COMMENT attribute
+Error code: ddlxmlfileerror
+✗ Errors found in XMLDB file: Missing COMMENT attribute
+```
+
+**Root Cause**: Moodle's XMLDB parser requires strict XML formatting.
+
+**❌ Broken XMLDB (Will Fail Installation)**:
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/socialwall/db" VERSION="2024121700">
+  <!-- Missing COMMENT attribute and namespace declarations -->
+  <TABLES>
+    <TABLE NAME="socialwall" COMMENT="Main socialwall table">
+```
+
+**✅ Fixed XMLDB (Works Correctly)**:
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/socialwall/db" VERSION="2024121700" COMMENT="XMLDB file for Moodle mod/socialwall"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+  <TABLES>
+    <TABLE NAME="socialwall" COMMENT="Main socialwall table">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+        <!-- CRITICAL: All non-primary fields MUST have SEQUENCE="false" -->
+      </FIELDS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
+```
+
+**🔧 Required Fixes**:
+1. Add `COMMENT="XMLDB file for Moodle mod/yourmodule"` to root element
+2. Add XML namespace declarations (`xmlns:xsi` and `xsi:noNamespaceSchemaLocation`)
+3. Add `SEQUENCE="false"` to ALL non-primary key fields
+4. Use proper schema reference path: `../../../lib/xmldb/xmldb.xsd`
+
+### 🚨 Database Constraint Violations
+
+#### Error 2: Null Constraint Violation
+```
+Debug info: ERROR:  null value in column "introformat" of relation "m_socialwall"
+violates not-null constraint
+```
+
+**Root Cause**: Form processing doesn't properly set default values for intro fields.
+
+**❌ Broken Code (Causes Database Error)**:
+```php
+function socialwall_add_instance(stdClass $data, ?mod_socialwall_mod_form $form = null) {
+    global $DB;
+
+    // BAD: Missing proper intro field handling
+    $data->timecreated = time();
+    $data->timemodified = $data->timecreated;
+
+    // This will fail if intro/introformat are null
+    $data->id = $DB->insert_record('socialwall', $data);
+    return $data->id;
+}
+```
+
+**✅ Fixed Code (Handles Defaults Properly)**:
+```php
+function socialwall_add_instance(stdClass $data, ?mod_socialwall_mod_form $form = null) {
+    global $DB;
+
+    $data->timecreated = time();
+    $data->timemodified = $data->timecreated;
+
+    // CRITICAL: Handle intro field processing BEFORE setting defaults
+    if ($form && isset($data->intro_editor)) {
+        $data = file_postupdate_standard_editor($data, 'intro',
+            socialwall_get_editor_options(), $form->get_context(),
+            'mod_socialwall', 'intro', 0);
+    }
+
+    // CRITICAL: Ensure intro and introformat have proper values
+    if (!isset($data->intro) || $data->intro === null) {
+        $data->intro = '';
+    }
+    if (!isset($data->introformat) || $data->introformat === null) {
+        $data->introformat = FORMAT_HTML;
+    }
+
+    $data->id = $DB->insert_record('socialwall', $data);
+    return $data->id;
+}
+```
+
+### 🚨 Form Processing Failures
+
+#### Error 3: POST Form Not Processing
+**The Problem**: Posts are not being created despite no visible errors.
+
+**Root Cause**: Submit button detection logic is incorrect.
+
+**❌ Broken Code (Submit Never Detected)**:
+```php
+// BAD: Submit buttons send empty values, this will NEVER work
+$submitpost = optional_param('submitpost', '', PARAM_TEXT);
+if ($submitpost) { // This condition is NEVER true!
+    // Process form - this code never runs
+    $content = required_param('content', PARAM_TEXT);
+    // ... form processing
+}
+```
+
+**✅ Fixed Code (Detects Submit Correctly)**:
+```php
+// GOOD: Properly detect POST submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitpost'])) {
+    require_sesskey(); // CSRF protection
+
+    $content = required_param('content', PARAM_TEXT);
+    // ... form processing
+
+    redirect(new moodle_url('/mod/socialwall/view.php', ['id' => $cm->id]));
+}
+```
+
+**🔧 Key Learning**: Submit buttons (`<button type="submit" name="submitpost">`) send empty values, not the button text. Use `isset($_POST['submitpost'])` to detect submission.
+
+### 🚨 User Picture Display Errors
+
+#### Error 4: Object Conversion Error
+```
+Exception - Object of class stdClass could not be converted to string in
+/var/www/html/lib/outputlib.php:4089
+```
+
+**Root Cause**: Using manually constructed user objects instead of complete database records.
+
+**❌ Broken Code (Manual User Object)**:
+```php
+// BAD: Creating user object manually from post data
+$post = $DB->get_record('socialwall_posts', ['id' => $postid]);
+
+// This creates an incomplete user object!
+$user = new stdClass();
+$user->id = $post->user_id;
+$user->firstname = $post->firstname;
+$user->lastname = $post->lastname;
+// Missing many required fields!
+
+echo $OUTPUT->user_picture($user); // FAILS with conversion error!
+```
+
+**✅ Fixed Code (Complete User Record)**:
+```php
+// GOOD: Always get complete user record from database
+$post = $DB->get_record('socialwall_posts', ['id' => $postid]);
+
+// Get the complete user record - this has ALL required fields
+$user = $DB->get_record('user', ['id' => $post->user_id]);
+
+if ($user) {
+    echo $OUTPUT->user_picture($user, ['size' => 40, 'class' => 'rounded-circle']);
+} else {
+    // Fallback for deleted users
+    echo '<div class="bg-secondary rounded-circle" style="width: 40px; height: 40px;"></div>';
+}
+```
+
+**🔧 Key Learning**: `user_picture()` requires complete user records with all fields. Never construct user objects manually.
+
+### 🚨 Completion Tracking Failures
+
+#### Error 5: Course Record Not Found
+```
+Can't find data record in database table course.
+(SELECT * FROM {course} WHERE id IS NULL)
+```
+
+**Root Cause**: Using course module ID instead of course ID for completion tracking.
+
+**❌ Broken Code (Wrong Object Type)**:
+```php
+// BAD: cm->course is course ID (integer), not course object
+$completion = new completion_info($this->cm->course);
+$completion->update_state($this->cm, COMPLETION_COMPLETE, $userid);
+```
+
+**✅ Fixed Code (Proper Course Object)**:
+```php
+// GOOD: Get full course object using course ID
+$course = get_course($this->cm->course);
+$completion = new completion_info($course);
+$completion->update_state($this->cm, COMPLETION_COMPLETE, $userid);
+```
+
+**🔧 Key Learning**: `completion_info()` requires a full course object, not just the course ID.
+
+### 🚨 Social Media Layout Issues
+
+#### Problem: Instagram-Style Layout Implementation
+**Common Challenge**: Creating responsive social media layouts with fixed image aspect ratios.
+
+**❌ Poor CSS (Images Stretch and Break Layout)**:
+```css
+/* BAD: Images stretch to full width, no consistent sizing */
+.socialwall-attachment img {
+    width: 100%;
+    height: auto;
+    max-height: 400px; /* Arbitrary limit, inconsistent sizing */
+}
+
+.socialwall-posts {
+    /* No grid structure, posts stack vertically */
+}
+```
+
+**✅ Instagram-Style CSS (Fixed Aspect Ratios)**:
+```css
+/* GOOD: Instagram-style square images with responsive grid */
+.socialwall-posts {
+    margin: 0 -8px; /* Account for column padding */
+}
+
+.socialwall-posts .col-xl-3,
+.socialwall-posts .col-lg-4,
+.socialwall-posts .col-md-6,
+.socialwall-posts .col-sm-12 {
+    padding: 0 8px;
+    margin-bottom: 16px;
+}
+
+/* Fixed 1:1 aspect ratio for all images */
+.socialwall-attachment {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 1:1 aspect ratio */
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.socialwall-attachment img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop to fit square */
+    border-radius: 0;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 1200px) {
+    .socialwall-posts .col-xl-3 {
+        flex: 0 0 25%;        /* 4 columns */
+        max-width: 25%;
+    }
+}
+
+@media (min-width: 992px) {
+    .socialwall-posts .col-lg-4 {
+        flex: 0 0 33.333333%; /* 3 columns */
+        max-width: 33.333333%;
+    }
+}
+
+@media (min-width: 768px) {
+    .socialwall-posts .col-md-6 {
+        flex: 0 0 50%;        /* 2 columns */
+        max-width: 50%;
+    }
+}
+```
+
+**🔧 HTML Structure for Instagram-Style Posts**:
+```php
+// GOOD: Proper structure with image at top
+foreach ($posts as $post) {
+    echo '<div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">';
+    echo '<div class="socialwall-post card" data-postid="' . $post->id . '">';
+
+    // Header with user info (Instagram style)
+    echo '<div class="socialwall-post-header">';
+    echo '<div class="socialwall-avatar mr-3">';
+    $user = $DB->get_record('user', ['id' => $post->user_id]);
+    if ($user) {
+        echo $OUTPUT->user_picture($user, ['size' => 32, 'class' => 'rounded-circle']);
+    }
+    echo '</div>';
+    echo '<div class="flex-grow-1">';
+    echo '<h6 class="mb-0">' . fullname($user) . '</h6>';
+    echo '<small class="text-muted">' . userdate($post->timecreated) . '</small>';
+    echo '</div>';
+    echo '</div>';
+
+    // Image first (Instagram style)
+    if ($post->attachment) {
+        echo '<div class="socialwall-attachment">';
+        $file_url = moodle_url::make_pluginfile_url($context->id, 'mod_socialwall', 'attachment', $post->id, '/', $post->attachment);
+        echo '<img src="' . $file_url . '" alt="Post attachment">';
+        echo '</div>';
+    }
+
+    // Content below image
+    echo '<div class="socialwall-content">';
+    echo '<p class="mb-0">' . format_text($post->content, $post->contentformat) . '</p>';
+    echo '</div>';
+
+    // Interactions at bottom
+    echo '<div class="socialwall-interactions">';
+    // ... likes, comments, etc.
+    echo '</div>';
+
+    echo '</div>'; // .socialwall-post
+    echo '</div>'; // .col-*
+}
+```
+
+### 🛠️ Development Best Practices from Real Experience
+
+#### 1. Debugging Strategies That Work
+```php
+// Enable temporary debug output during development
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitpost'])) {
+    if (debugging()) {
+        echo '<pre>Debug: POST data = ';
+        print_r($_POST);
+        echo '</pre>';
+    }
+
+    // Process form...
+}
+
+// Debug database queries
+if (debugging()) {
+    echo '<pre>Debug: Found ' . count($posts) . ' posts for socialwall ID: ' . $socialwall->id . '</pre>';
+}
+```
+
+#### 2. File Upload Validation Patterns
+```php
+public function handle_file_upload($file) {
+    if (empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    // CRITICAL: Validate file type
+    $allowedtypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!in_array($file['type'], $allowedtypes)) {
+        throw new moodle_exception('invalidfiletype', 'mod_socialwall');
+    }
+
+    // CRITICAL: Validate file size (5MB max)
+    $maxsize = 5 * 1024 * 1024;
+    if ($file['size'] > $maxsize) {
+        throw new moodle_exception('filesizetoobig', 'mod_socialwall');
+    }
+
+    // Generate unique filename to prevent conflicts
+    $pathinfo = pathinfo($file['name']);
+    $extension = strtolower($pathinfo['extension']);
+    $filename = uniqid() . '_' . time() . '.' . $extension;
+
+    return [
+        'filename' => $filename,
+        'originalname' => $file['name'],
+        'temppath' => $file['tmp_name'],
+        'size' => $file['size'],
+        'type' => $file['type']
+    ];
+}
+```
+
+#### 3. Manager Class Patterns
+```php
+class socialwall_manager {
+    private $socialwall;
+    private $context;
+    private $cm;
+
+    public function __construct($socialwall, $context, $cm) {
+        $this->socialwall = $socialwall;
+        $this->context = $context;
+        $this->cm = $cm;
+    }
+
+    public function can_post($userid = null) {
+        global $USER;
+
+        if ($userid === null) {
+            $userid = $USER->id;
+        }
+
+        // Check capability first
+        if (!has_capability('mod/socialwall:post', $this->context, $userid)) {
+            return false;
+        }
+
+        // Check business rules (max posts limit)
+        if ($this->socialwall->maxposts > 0) {
+            $userpostcount = $this->get_user_post_count($userid);
+            if ($userpostcount >= $this->socialwall->maxposts) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function create_post($content, $userid = null, $attachment = null) {
+        global $DB, $USER;
+
+        if ($userid === null) {
+            $userid = $USER->id;
+        }
+
+        // Validate permissions
+        if (!$this->can_post($userid)) {
+            throw new moodle_exception('cannotpost', 'mod_socialwall');
+        }
+
+        // Validate content
+        if (empty(trim($content))) {
+            throw new moodle_exception('nopostcontent', 'mod_socialwall');
+        }
+
+        if (strlen($content) > $this->socialwall->maxlength) {
+            throw new moodle_exception('posttoolong', 'mod_socialwall', '', $this->socialwall->maxlength);
+        }
+
+        // Create post
+        $post = new stdClass();
+        $post->socialwall = $this->socialwall->id;
+        $post->userid = $userid;
+        $post->content = $content;
+        $post->contentformat = FORMAT_PLAIN;
+        $post->attachment = $attachment;
+        $post->timecreated = time();
+        $post->timemodified = time();
+
+        $post->id = $DB->insert_record('socialwall_posts', $post);
+
+        // Log event
+        $event = \mod_socialwall\event\post_created::create([
+            'objectid' => $post->id,
+            'context' => $this->context,
+            'userid' => $userid,
+            'other' => ['socialwallid' => $this->socialwall->id]
+        ]);
+        $event->trigger();
+
+        // Update completion
+        $course = get_course($this->cm->course); // Get full course object!
+        $completion = new completion_info($course);
+        $completion->update_state($this->cm, COMPLETION_COMPLETE, $userid);
+
+        return $post;
+    }
+}
+```
+
+### 📋 Development Checklist from Real Experience
+
+**Before Plugin Installation:**
+- [ ] XMLDB has proper XML declaration and namespace
+- [ ] All fields have `SEQUENCE="false"` (except primary key)
+- [ ] Root element has `COMMENT` attribute
+- [ ] Schema reference path is correct
+
+**During Form Development:**
+- [ ] Use `isset($_POST['submitpost'])` not `optional_param()`
+- [ ] Handle intro/introformat defaults in add/update functions
+- [ ] Validate file uploads properly
+- [ ] Include CSRF protection with `require_sesskey()`
+
+**For User Interface:**
+- [ ] Get complete user records with `$DB->get_record('user', ...)`
+- [ ] Use proper file serving with `pluginfile.php`
+- [ ] Implement responsive CSS with proper aspect ratios
+- [ ] Test with different user roles and permissions
+
+**For Database Operations:**
+- [ ] Use full course objects for completion tracking
+- [ ] Implement proper transaction handling
+- [ ] Add indexes for common query patterns
+- [ ] Test with real data volumes
+
+**For Social Media Features:**
+- [ ] Implement fixed aspect ratios for images
+- [ ] Use responsive grid systems
+- [ ] Test on multiple screen sizes
+- [ ] Ensure accessibility compliance
+
+These patterns are based on actual bugs encountered and fixed during real plugin development. Following them will prevent the most common and time-consuming issues.
