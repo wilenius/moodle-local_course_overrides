@@ -1,216 +1,122 @@
-# Modular Moodle Plugin Development Assistant (MoMoPDA)
+# Course Quiz Overrides - Moodle Local Plugin
 
-This repository is a collection of prompts that can be combined in different ways in order to use agentic generative AI for software development in Moodle. Its first version is only tested with Claude Code, but with little modifications, it could be made work with other agent software and backends as well. Pull requests welcome!
+A Moodle local plugin that provides centralized management of quiz overrides for all quizzes within a course. This plugin allows instructors to efficiently create, view, and manage quiz overrides for users and groups across multiple quizzes from a single interface.
+
+## Features
+
+- **Centralized Override Management**: View and manage all quiz overrides for a course from one location
+- **Bulk Override Creation**: Create the same override settings across multiple quizzes simultaneously
+- **User and Group Support**: Create overrides for individual users or groups
+- **Override Types Supported**:
+  - Time limits
+  - Opening times
+  - Closing times
+  - Number of attempts
+- **Update Existing Overrides**: Option to update existing overrides or skip them when creating bulk overrides
+- **Integration with Course Navigation**: Seamlessly integrates into the course administration menu
+
+## Requirements
+
+- Moodle 4.0 or higher (requires 2022041900)
+- PHP 7.4 or higher
+- Users must have the `mod/quiz:manageoverrides` capability
+
+## Installation
+
+1. Download or clone the plugin to your Moodle installation:
+   ```bash
+   cd /path/to/moodle
+   git clone [repository-url] local/course_overrides
+   ```
+
+2. Complete the installation through the Moodle admin interface:
+   - Log in as an administrator
+   - Go to Site Administration → Notifications
+   - Follow the installation prompts
+
+## Usage
+
+### Accessing the Plugin
+
+1. Navigate to any course where you have quiz management permissions
+2. In the course administration menu, look for "Course quiz overrides"
+3. Click to access the override management interface
+
+### Viewing Existing Overrides
+
+The main interface displays:
+- All quizzes in the course
+- Existing overrides for each quiz
+- Override details (time limits, opening/closing times, attempts)
+- User or group names associated with each override
+
+### Creating Bulk Overrides
+
+1. Click the "Add override" button on the main page
+2. Select the target user or group
+3. Configure the override settings:
+   - Time limit
+   - Opening time
+   - Closing time
+   - Number of attempts
+4. Choose whether to update existing overrides
+5. Submit to apply the override across all applicable quizzes
+
+### Deleting Overrides
+
+- Use the "Delete" button next to any override in the list
+- Confirm the deletion when prompted
+
+## Permissions
+
+The plugin respects Moodle's existing permission system:
+- Users need `mod/quiz:manageoverrides` capability to access the plugin
+- Permissions are checked at both course and individual quiz levels
+- Only visible quizzes are included in the override management
 
 ## File Structure
 
 ```
-├── PROMPT.md                        # Main orchestrator file
-├── CLAUDE.md                        # Redirect to PROMPT.md
-└── .prompts/  
-    ├── core/
-    │   ├── base-instructions.md     # Core Moodle development principles
-    │   ├── security-checklist.md    # Security requirements
-    │   └── quality-standards.md     # Code quality standards
-    ├── plugins/
-    │   ├── block.md                 # Block plugin development guide
-    │   ├── enrol.md                 # Enrolment plugin development guide
-    │   ├── enrol_patterns.md        # Enrolment plugin patterns and anti-patterns
-    │   ├── filter.md                # Filter plugin development guide
-    │   ├── filter_patterns.md       # Filter plugin patterns and anti-patterns
-    │   ├── mod.md                   # Activity module plugin development guide
-    │   ├── mod_patterns.md          # Activity module plugin patterns and anti-patterns
-    │   ├── qbank.md                 # Question bank plugin development guide
-    │   ├── qbank_patterns.md        # Question bank plugin patterns and anti-patterns
-    │   ├── qtype.md                 # Question type plugin development guide
-    │   ├── qtype_patterns.md        # Question type plugin patterns and anti-patterns
-    │   ├── report.md                # Report plugin development guide
-    │   ├── report_patterns.md       # Report plugin patterns and anti-patterns
-    │   ├── tiny.md                  # TinyMCE editor plugin development guide
-    │   └── tiny_patterns.md         # TinyMCE editor plugin patterns and anti-patterns
-    ├── tasks/
-    │   ├── create.md                # New plugin creation
-    │   ├── bugfix.md                # Bug fixing workflow
-    │   ├── test.md                  # Test creation
-    │   ├── enhance.md               # Feature enhancement
-    │   └── refactor.md              # Code refactoring
-    └── patterns/
-        ├── database.md              # Database operation patterns
-        ├── forms.md                 # Moodle forms patterns
-        ├── navigation.md            # Navigation integration
-        └── api-usage.md             # Common API usage patterns
-```
-## Moodle Core Repository
-
-The Moodle core repository should be cloned alongside this repository for reference:
-```
-../moodle/          # Moodle core repository
-./                  # This plugin repository
+local/course_overrides/
+├── README.md
+├── version.php              # Plugin version and metadata
+├── lib.php                  # Core library functions and navigation
+├── index.php                # Main override management interface
+├── bulk_override.php        # Bulk override creation and management
+├── override.php             # Individual override handling
+├── lang/
+│   └── en/
+│       └── local_course_overrides.php  # English language strings
+└── classes/                 # Plugin classes (if any)
 ```
 
+## Language Support
 
-## Usage Examples
+The plugin includes English language strings and follows Moodle's internationalization standards. Additional language packs can be added in the `lang/` directory.
 
-### Example 1: New Block Plugin
-**Detected**: `block_` repository name
-**Loads**:
-- core/base-instructions.md
-- plugins/block.md  
-- tasks/create.md
-- core/security-checklist.md
+## Development
 
-### Example 2: Bug Fix in Question Type
-**Detected**: `qtype` repository name + git branch "fix/calculation-error"
-**Loads**:
-- core/base-instructions.md
-- plugins/qtype.md
-- plugins/qtype_patterns.md
-- tasks/bugfix.md
-- patterns/database.md (if DB operations detected)
-- core/security-checklist.md
+### Version Information
+- **Current Version**: 1.0
+- **Maturity**: ALPHA
+- **Component**: local_course_overrides
 
-### Example 3: New Enrolment Plugin
-**Detected**: `enrol_` repository name
-**Loads**:
-- core/base-instructions.md
-- plugins/enrol.md
-- plugins/enrol_patterns.md
-- tasks/create.md
-- core/security-checklist.md
+### Contributing
 
-### Example 4: TinyMCE Editor Plugin Enhancement
-**Detected**: `tiny_` repository name + request mentions "add feature"
-**Loads**:
-- core/base-instructions.md
-- plugins/tiny.md
-- plugins/tiny_patterns.md
-- tasks/enhance.md
-- patterns/forms.md (if form integration detected)
-- core/security-checklist.md
+When contributing to this plugin:
+1. Follow Moodle coding standards
+2. Ensure proper capability checks are implemented
+3. Test with different user roles and permissions
+4. Update language strings as needed
 
-### Example 5: Adding Tests
-**Detected**: Request mentions "tests" or "phpunit"
-**Loads**:
-- core/base-instructions.md
-- plugins/{detected_type}.md
-- plugins/{detected_type}_patterns.md (if available)
-- tasks/test.md
-- core/security-checklist.md
+## License
 
-## Supported Plugin Types
+This plugin is licensed under the GNU General Public License v3 or later, consistent with Moodle's licensing.
 
-MoMoPDA provides comprehensive development guides and pattern documentation for the following Moodle plugin types:
+## Support
 
-### Core Plugin Types
-- **Activity Modules** (`mod_*`) - Custom learning activities and assignments
-- **Block Plugins** (`block_*`) - Custom dashboard and course blocks
-- **Question Types** (`qtype_*`) - Custom question types for quizzes and assignments
-- **Question Bank Plugins** (`qbank_*`) - Question bank management and organization tools
+For issues, feature requests, or contributions, please refer to the project's issue tracking system or contact the plugin maintainer.
 
-### Enrolment and User Management
-- **Enrolment Plugins** (`enrol_*`) - Custom user enrolment methods and workflows
+---
 
-### Content and Filtering
-- **Filter Plugins** (`filter_*`) - Content processing and transformation filters
-- **TinyMCE Editor Plugins** (`tiny_*`) - Rich text editor extensions and tools
-
-### Administration and Reporting
-- **Report Plugins** (`report_*`) - Administrative reports and analytics dashboards
-
-### Each Plugin Type Includes:
-- **Development Guide** - Complete implementation instructions with code examples
-- **Patterns & Anti-Patterns** - Best practices, common pitfalls, and security considerations
-- **Testing Strategies** - Unit testing, integration testing, and quality assurance
-- **Performance Guidelines** - Optimization techniques and database best practices
-- **Security Checklists** - Vulnerability prevention and secure coding practices
-
-All guides are based on analysis of Moodle 5.x core implementations and follow official Moodle development standards.
-
-## Getting Started
-
-### Prerequisites
-- [Claude Code](https://claude.ai/code) or compatible agentic AI development environment
-- Git
-- Moodle development environment (optional but recommended)
-
-### Setup Instructions
-
-1. **Clone the MoMoPDA repository**
-   ```bash
-   git clone https://github.com/your-org/momopda.git
-   cd momopda
-   ```
-
-2. **Create your plugin repository**
-
-   Rename or create a new repository following Moodle plugin naming conventions:
-
-   ```bash
-   # E.g., for a new block plugin
-   git clone https://github.com/your-org/momopda.git moodle-block_your_plugin_name
-   cd moodle-block_your_plugin_name
-
-   ```
-
-   **Plugin Naming Convention Examples:**
-   - Activity modules: `moodle-mod_interactive_lesson`
-   - Block plugins: `moodle-block_nice_new_block`
-   - Question types: `moodle-qtype_custom_quiz`
-   - Enrolment plugins: `moodle-enrol_company_sso`
-   - Filter plugins: `moodle-filter_content_enhancer`
-   - TinyMCE plugins: `moodle-tiny_equation_editor`
-   - Report plugins: `moodle-report_analytics_dashboard`
-   - Question bank plugins: `moodle-qbank_question_organizer`
-
-3. **Optional: Clone Moodle core for reference**
-   ```bash
-   # In parent directory
-   cd ..
-   git clone https://github.com/moodle/moodle.git
-   ```
-
-   Your directory structure should look like:
-   ```
-   .
-   ├── moodle/                           # Moodle core (optional reference)
-   └── moodle-block_your_plugin_name/    # Your plugin with MoMoPDA
-       ├── PROMPT.md
-       ├── CLAUDE.md
-       └── .prompts/
-   ```
-
-4. **Start your coding agent from the root of the repository**
-
-5. **Begin development**
-
-   Start by describing what you want to build. MoMoPDA will automatically detect your plugin type from the repository name and load the appropriate guides:
-
-   ```
-   "I want to create a new block plugin that displays student progress charts"
-   "Help me add a new question type for mathematical expressions"
-   "I need to fix a bug in my enrolment plugin's user sync feature"
-   ```
-
-### How It Works
-
-MoMoPDA automatically detects your plugin type and development context:
-
-- **Plugin Type Detection**: Based on repository name (e.g., `block_*`, `qtype_*`, `enrol_*`)
-- **Task Detection**: Based on git branch names, file changes, and user requests
-- **Context Loading**: Automatically loads relevant guides, patterns, and best practices
-- **Security & Quality**: Always includes security checklists and quality standards
-
-### Tips for Best Results
-
-1. **Use descriptive repository names** following Moodle conventions
-2. **Be specific in your requests** - mention features, requirements, and constraints
-3. **Reference existing Moodle plugins** if you want similar functionality
-4. **Ask for tests** - MoMoPDA includes comprehensive testing guidance
-5. **Request security reviews** when handling user data or permissions
-
-### Troubleshooting
-
-- **Plugin type not detected?** Ensure your repository name follows the `moodle-{plugintype}_{pluginname}` convention
-- **Missing guidance?** Check if your plugin type is supported in the list above
-- **Need custom patterns?** The guides include extension points for custom functionality
-- **Your new plugin has bugs?** Fix them and ask your coding agent to improve the patterns files!
+*This plugin streamlines quiz override management for course instructors, making it easier to provide accommodations and special access to students across multiple assessments.*
