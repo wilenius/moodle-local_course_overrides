@@ -1,0 +1,62 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_course_overrides/course_overrides
+
+    Main template for course overrides page.
+
+    Context variables required for this template:
+    * courseid - Course ID
+    * bulkurl - URL for bulk override page
+    * hasquizzes - Boolean indicating if quizzes exist
+    * quizzes - Array of quiz objects with overrides
+
+    Example context (json):
+    {
+        "courseid": 123,
+        "bulkurl": "/local/course_overrides/bulk_override.php?courseid=123",
+        "hasquizzes": true,
+        "quizzes": [
+            {
+                "id": 456,
+                "name": "Sample Quiz",
+                "hasoverrides": true,
+                "overrides": [...]
+            }
+        ]
+    }
+}}
+
+{{#hasquizzes}}
+<div class="text-center mb-3">
+    <a href="{{{bulkurl}}}" class="btn btn-primary">
+        {{#str}}addoverride, local_course_overrides{{/str}}
+    </a>
+</div>
+
+<div class="course-overrides-container">
+    {{#quizzes}}
+        {{> local_course_overrides/quiz_card }}
+    {{/quizzes}}
+</div>
+{{/hasquizzes}}
+
+{{^hasquizzes}}
+<div class="alert alert-info">
+    {{#str}}noquizzes, local_course_overrides{{/str}}
+</div>
+{{/hasquizzes}}

@@ -49,3 +49,13 @@ $string['bulkoverrideinfo'] = 'This will create the same time limit override for
 $string['updateexisting'] = 'Update existing overrides';
 $string['updateexistingdesc'] = 'Check this to update existing overrides for this user, otherwise existing overrides will be skipped.';
 $string['updateexisting_help'] = 'Check this to update existing overrides for this user, otherwise existing overrides will be skipped.';
+
+// Additional strings for renderer and templates.
+$string['timelimit'] = 'Time limit';
+$string['opens'] = 'Opens';
+$string['closes'] = 'Closes';
+$string['attempts'] = 'Attempts';
+$string['overrideinfo'] = 'Override information';
+$string['unknownuser'] = 'Unknown user';
+$string['unknowngroup'] = 'Unknown group';
+$string['unknown'] = 'Unknown';

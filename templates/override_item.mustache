@@ -1,0 +1,52 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_course_overrides/override_item
+
+    Template for individual override list item.
+
+    Context variables required for this template:
+    * id - Override ID
+    * displayname - User or group display name
+    * info - Formatted override information
+    * hasinfo - Boolean indicating if info exists
+    * deleteurl - URL for delete action
+
+    Example context (json):
+    {
+        "id": 789,
+        "displayname": "John Doe",
+        "info": "Time limit: 60 minutes, Opens: Monday, 1 January 2024",
+        "hasinfo": true,
+        "deleteurl": "/local/course_overrides/bulk_override.php?action=delete&overrideid=789&sesskey=..."
+    }
+}}
+
+<li class="list-group-item d-flex justify-content-between align-items-center">
+    <div class="flex-grow-1">
+        <span class="fw-bold">{{{displayname}}}</span>
+        {{#hasinfo}}
+        <br>
+        <small class="text-muted">{{{info}}}</small>
+        {{/hasinfo}}
+    </div>
+    <div class="ms-2">
+        <a href="{{{deleteurl}}}" class="btn btn-sm btn-outline-danger">
+            {{#str}}delete{{/str}}
+        </a>
+    </div>
+</li>
