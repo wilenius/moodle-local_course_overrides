@@ -6,20 +6,24 @@ A Moodle local plugin that provides centralized management of quiz overrides for
 
 - **Centralized Override Management**: View and manage all quiz overrides for a course from one location
 - **Bulk Override Creation**: Create the same override settings across multiple quizzes simultaneously
-- **User and Group Support**: Create overrides for individual users or groups
-- **Override Types Supported**:
-  - Time limits
+- **Create overrides for individual users**
+- **Create Time limit overrides**
+- **Update Existing Overrides**: Option to update existing overrides or skip them when creating bulk overrides
+- **Integration with Course Navigation**: Available in the course main navigation menu
+- **Respects the mod/quiz:manageoverrides capability**
+
+### Not implemented yet 
+
+- **Group Support**
+- **More Override Types**:
   - Opening times
   - Closing times
   - Number of attempts
-- **Update Existing Overrides**: Option to update existing overrides or skip them when creating bulk overrides
-- **Integration with Course Navigation**: Seamlessly integrates into the course administration menu
 
 ## Requirements
 
-- Moodle 4.0 or higher (requires 2022041900)
+- Tested on Moodle 5.x, might work on older versions too
 - PHP 7.4 or higher
-- Users must have the `mod/quiz:manageoverrides` capability
 
 ## Installation
 
@@ -36,43 +40,7 @@ A Moodle local plugin that provides centralized management of quiz overrides for
 
 ## Usage
 
-### Accessing the Plugin
-
-1. Navigate to any course where you have quiz management permissions
-2. In the course administration menu, look for "Course quiz overrides"
-3. Click to access the override management interface
-
-### Viewing Existing Overrides
-
-The main interface displays:
-- All quizzes in the course
-- Existing overrides for each quiz
-- Override details (time limits, opening/closing times, attempts)
-- User or group names associated with each override
-
-### Creating Bulk Overrides
-
-1. Click the "Add override" button on the main page
-2. Select the target user or group
-3. Configure the override settings:
-   - Time limit
-   - Opening time
-   - Closing time
-   - Number of attempts
-4. Choose whether to update existing overrides
-5. Submit to apply the override across all applicable quizzes
-
-### Deleting Overrides
-
-- Use the "Delete" button next to any override in the list
-- Confirm the deletion when prompted
-
-## Permissions
-
-The plugin respects Moodle's existing permission system:
-- Users need `mod/quiz:manageoverrides` capability to access the plugin
-- Permissions are checked at both course and individual quiz levels
-- Only visible quizzes are included in the override management
+Self-explanatory really. Go to the course administration menu, and look for "Course quiz overrides".
 
 ## File Structure
 
@@ -103,20 +71,8 @@ The plugin includes English language strings and follows Moodle's internationali
 
 ### Contributing
 
-When contributing to this plugin:
-1. Follow Moodle coding standards
-2. Ensure proper capability checks are implemented
-3. Test with different user roles and permissions
-4. Update language strings as needed
+This version was created in 25 minutes with Claude Code and Claude 4.x models during the Moodle AI workshop in MoodleMoot Global 2025. The code is completely not human-examined. So at the moment, you definitely should not install this on your production server. Code reviews and pull requests most welcome! 
 
 ## License
 
-This plugin is licensed under the GNU General Public License v3 or later, consistent with Moodle's licensing.
-
-## Support
-
-For issues, feature requests, or contributions, please refer to the project's issue tracking system or contact the plugin maintainer.
-
----
-
-*This plugin streamlines quiz override management for course instructors, making it easier to provide accommodations and special access to students across multiple assessments.*
+This plugin is licensed under the GNU General Public License v3.
